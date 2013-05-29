@@ -1,0 +1,10 @@
+#!/bin/bash
+USERNAME=`grep "user" sftp-config.json | awk {'print $2'} | sed 's/"//g' | sed 's/,//g'`
+REMOTE_PATH=`grep "remote_path" sftp-config.json | awk {'print $2'} | sed 's/"//g' | sed 's/,//g'`
+REMOTE_HOST=`grep "host" sftp-config.json | awk {'print $2'} | sed 's/"//g' | sed 's/,//g'`
+# if [ -a "$HOME/.ssh/id_rsa.pub" ]
+# then
+#   scp "$HOME/.ssh/id_rsa.pub" $USERNAME@$REMOTE_HOST:~/.ssh/authorized_keys2 > /dev/null
+# fi
+rsync  --verbose --rsync-path "sudo rsync" --exclude-from ".gitignore"  --exclude "opt/movies" --exclude ".git" -aze "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" . $USERNAME@$REMOTE_HOST:$REMOTE_PATH
+ssh $USERNAME@$REMOTE_HOST "sudo chmod 777 -R $REMOTE_PATH/"
